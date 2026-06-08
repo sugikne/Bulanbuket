@@ -588,9 +588,9 @@ export default function App() {
             {/* Logo description */}
             <div id="footer-branding" className="space-y-3">
               <div className="flex items-center space-x-2">
-                <span className="text-xl">🌙</span>
+                {/* <span className="text-xl">🌙</span> */}
                 <span className="text-xl font-bold font-heading text-white">
-                  Moon <span className="font-light text-gray-300">Bouquet</span>
+                  Bulan <span className="font-light text-gray-300">Bouquet</span>
                 </span>
               </div>
               <p className="text-xs text-gray-400 font-light leading-relaxed max-w-sm">
