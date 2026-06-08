@@ -1,0 +1,156 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    // 1. Global Safety Net
+    match /{document=**} {
+      allow read, write: if false;
+    }
+
+    // Phase 3: Primitive Definition
+    function isValidId(id) {
+      return id is string && id.size() <= 128 && id.matches('^[a-zA-Z0-9_\\-]+$');
+    }
+    
+    function incoming() {
+      return request.resource.data;
+    }
+    
+    function existing() {
+      return resource.data;
+    }
+    
+    function isSignedIn() {
+      return request.auth != null;
+    }
+    
+    function isAdmin() {
+      return isSignedIn() && (
+        request.auth.token.email == "putusugianta2005@gmail.com" ||
+        exists(/databases/$(database)/documents/admins/$(request.auth.uid))
+      );
+    }
+
+    // Validation definitions
+    function isValidProduct(p) {
+      return p.keys().hasAll(['id', 'name', 'price', 'description', 'category', 'image', 'isAvailable', 'createdAt'])
+        && (p.keys().size() == 8 || (p.keys().size() == 9 && p.keys().hasAll(['costPrice']) && (p.costPrice is int || p.costPrice is float)))
+        && p.id is string && p.id.size() <= 100
+        && p.name is string && p.name.size() > 0 && p.name.size() <= 200
+        && (p.price is int || p.price is float) && p.price >= 0
+        && p.description is string && p.description.size() <= 2000
+        && p.category is string && p.category.size() <= 100
+        && p.image is string && p.image.size() <= 1000
+        && p.isAvailable is bool
+        && p.createdAt is string && p.createdAt.size() <= 50;
+    }
+
+    function isValidCategory(c) {
+      return c.keys().hasAll(['id', 'name', 'slug'])
+        && c.keys().size() == 3
+        && c.id is string && c.id.size() <= 100
+        && c.name is string && c.name.size() > 0 && c.name.size() <= 100
+        && c.slug is string && c.slug.size() > 0 && c.slug.size() <= 100;
+    }
+
+    function isValidOrder(o) {
+      return o.keys().hasAll(['id', 'customerName', 'customerPhone', 'customerAddress', 'items', 'totalAmount', 'status', 'createdAt'])
+        && (o.keys().size() == 8 || (o.keys().size() == 9 && o.keys().hasAny(['notes'])))
+        && o.id is string && o.id.size() <= 100
+        && o.customerName is string && o.customerName.size() > 0 && o.customerName.size() <= 200
+        && o.customerPhone is string && o.customerPhone.size() > 0 && o.customerPhone.size() <= 50
+        && o.customerAddress is string && o.customerAddress.size() > 0 && o.customerAddress.size() <= 500
+        && o.items is list && o.items.size() > 0 && o.items.size() <= 100
+        && (o.totalAmount is int || o.totalAmount is float) && o.totalAmount >= 0
+        && o.status in ['pending', 'processed', 'completed', 'cancelled']
+        && o.createdAt is string && o.createdAt.size() <= 50;
+    }
+
+    function isValidTestimonial(t) {
+      return t.keys().hasAll(['id', 'name', 'rating', 'text', 'isApproved', 'createdAt'])
+        && t.keys().size() == 6
+        && t.id is string && t.id.size() <= 100
+        && t.name is string && t.name.size() > 0 && t.name.size() <= 100
+        && (t.rating is int || t.rating is float) && t.rating >= 1 && t.rating <= 5
+        && t.text is string && t.text.size() > 0 && t.text.size() <= 1000
+        && t.isApproved is bool
+        && t.createdAt is string && t.createdAt.size() <= 50;
+    }
+
+    function isValidSetting(s) {
+      return s.keys().hasAll(['whatsappNumber', 'shopAddress', 'instagramUrl', 'heroTitle', 'heroDescription'])
+        && s.keys().size() == 5
+        && s.whatsappNumber is string && s.whatsappNumber.size() <= 50
+        && s.shopAddress is string && s.shopAddress.size() <= 500
+        && s.instagramUrl is string && s.instagramUrl.size() <= 200
+        && s.heroTitle is string && s.heroTitle.size() <= 200
+        && s.heroDescription is string && s.heroDescription.size() <= 1000;
+    }
+
+    function isValidCloudflareSetting(s) {
+      return s.keys().hasAll(['accountId', 'databaseId', 'apiToken', 'updatedAt'])
+        && s.keys().size() == 4
+        && s.accountId is string && s.accountId.size() <= 200
+        && s.databaseId is string && s.databaseId.size() <= 200
+        && s.apiToken is string && s.apiToken.size() <= 1000
+        && s.updatedAt is string && s.updatedAt.size() <= 50;
+    }
+
+    // Rules for Admins collection
+    match /admins/{adminId} {
+      allow read: if isSignedIn();
+      allow write: if isAdmin();
+    }
+
+    // Rules for Settings: config
+    match /settings/config {
+      allow read: if true;
+      allow create: if isValidSetting(incoming());
+      allow update: if isAdmin() && isValidSetting(incoming());
+    }
+
+    // Rules for Settings: cloudflare (highly secure credentials)
+    match /settings/cloudflare {
+      allow read: if isAdmin();
+      allow write: if isAdmin() && isValidCloudflareSetting(incoming());
+    }
+
+    // Generic match fallback to prevent settings-leak or unmapped settings documents
+    match /settings/{settingId} {
+      allow read, write: if isAdmin();
+    }
+
+    // Rules for Products
+    match /products/{productId} {
+      allow read: if true;
+      allow create: if isValidId(productId) && isValidProduct(incoming());
+      allow update: if isAdmin() && isValidId(productId) && isValidProduct(incoming());
+      allow delete: if isAdmin() && isValidId(productId);
+    }
+
+    // Rules for Categories
+    match /categories/{categoryId} {
+      allow read: if true;
+      allow create: if isValidId(categoryId) && isValidCategory(incoming());
+      allow update: if isAdmin() && isValidId(categoryId) && isValidCategory(incoming());
+      allow delete: if isAdmin() && isValidId(categoryId);
+    }
+
+    // Rules for Testimonials
+    match /testimonials/{testimonialId} {
+      allow read: if true;
+      allow create: if isValidId(testimonialId) && isValidTestimonial(incoming()) && (
+        isAdmin() || incoming().isApproved == false
+      );
+      allow update: if isAdmin() && isValidId(testimonialId) && isValidTestimonial(incoming());
+      allow delete: if isAdmin() && isValidId(testimonialId);
+    }
+
+    // Rules for Orders
+    match /orders/{orderId} {
+      allow read: if isAdmin() || true; // Allow tracking and status retrieval by phone or ID
+      allow create: if isValidId(orderId) && isValidOrder(incoming()) && incoming().status == 'pending';
+      allow update: if isAdmin() && isValidId(orderId) && isValidOrder(incoming());
+      allow delete: if isAdmin() && isValidId(orderId);
+    }
+  }
+}

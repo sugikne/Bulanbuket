@@ -1,0 +1,8 @@
+{
+  "name": "Moon Bouquet",
+  "description": "Website florist premium untuk buket bunga kawat bulu handmade yang unik dan elegan, lengkap dengan pemesanan WhatsApp langsung dan dashboard admin Firebase.",
+  "requestFramePermissions": [],
+  "majorCapabilities": [
+    "MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"
+  ]
+}

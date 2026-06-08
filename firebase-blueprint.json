@@ -1,0 +1,97 @@
+{
+  "entities": {
+    "Product": {
+      "title": "Product",
+      "description": "Represents a premium pipe-cleaner flower bouquet",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "name": { "type": "string" },
+        "price": { "type": "number" },
+        "description": { "type": "string" },
+        "category": { "type": "string" },
+        "image": { "type": "string" },
+        "isAvailable": { "type": "boolean" },
+        "createdAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["id", "name", "price", "description", "category", "image", "isAvailable", "createdAt"]
+    },
+    "Category": {
+      "title": "Category",
+      "description": "Product categories for filtering bouquets",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "name": { "type": "string" },
+        "slug": { "type": "string" }
+      },
+      "required": ["id", "name", "slug"]
+    },
+    "Order": {
+      "title": "Order",
+      "description": "Represents a customer's bouquet order",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "customerName": { "type": "string" },
+        "customerPhone": { "type": "string" },
+        "customerAddress": { "type": "string" },
+        "items": { "type": "array" },
+        "totalAmount": { "type": "number" },
+        "status": { "type": "string", "enum": ["pending", "processed", "completed", "cancelled"] },
+        "notes": { "type": "string" },
+        "createdAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["id", "customerName", "customerPhone", "customerAddress", "items", "totalAmount", "status", "createdAt"]
+    },
+    "Testimonial": {
+      "title": "Testimonial",
+      "description": "Customer feedback and reviews",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "name": { "type": "string" },
+        "rating": { "type": "number" },
+        "text": { "type": "string" },
+        "isApproved": { "type": "boolean" },
+        "createdAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["id", "name", "rating", "text", "isApproved", "createdAt"]
+    },
+    "Setting": {
+      "title": "Setting",
+      "description": "Global website settings, such as WhatsApp number and address",
+      "type": "object",
+      "properties": {
+        "whatsappNumber": { "type": "string" },
+        "shopAddress": { "type": "string" },
+        "instagramUrl": { "type": "string" },
+        "heroTitle": { "type": "string" },
+        "heroDescription": { "type": "string" }
+      },
+      "required": ["whatsappNumber"]
+    }
+  },
+  "firestore": {
+    "products": {
+      "schema": "Product",
+      "description": "Store of flower bouquets"
+    },
+    "categories": {
+      "schema": "Category",
+      "description": "Product categories"
+    },
+    "orders": {
+      "schema": "Order",
+      "description": "Customer order data"
+    },
+    "testimonials": {
+      "schema": "Testimonial",
+      "description": "Customer feedback and rating data"
+    },
+    "settings": {
+      "schema": "Setting",
+      "description": "Global website setting configurations"
+    }
+  }
+}

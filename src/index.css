@@ -1,0 +1,107 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Poppins:wght@400;500;600;700;800&display=swap');
+@import "tailwindcss";
+
+@theme {
+  --font-sans: "Inter", ui-sans-serif, system-ui, sans-serif;
+  --font-heading: "Poppins", sans-serif;
+  --color-maroon: #800020;
+  --color-maroon-hover: #660018;
+  --color-text-main: #1F2937;
+  --color-text-sec: #6B7280;
+  --color-bg-alt: #F8F9FA;
+}
+
+body {
+  font-family: var(--font-sans);
+  color: #1F2937;
+  background-color: #FFFFFF;
+}
+
+h1, h2, h3, h4, h5, h6 {
+  font-family: var(--font-heading);
+}
+
+/* Beautiful Artistic Flair helper classes */
+.btn-primary {
+  background-color: #800020;
+  color: #FFFFFF;
+  padding: 12px 28px;
+  border-radius: 9999px;
+  font-weight: 600;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  border: none;
+  cursor: pointer;
+}
+
+.btn-primary:hover {
+  background-color: #660018;
+  transform: translateY(-2px);
+  box-shadow: 0 10px 20px rgba(128, 0, 32, 0.15);
+}
+
+.btn-outline {
+  border: 2px solid #800020;
+  color: #800020;
+  padding: 10px 26px;
+  border-radius: 9999px;
+  font-weight: 600;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  background-color: transparent;
+  cursor: pointer;
+}
+
+.btn-outline:hover {
+  background-color: #800020;
+  color: #FFFFFF;
+  transform: translateY(-2px);
+  box-shadow: 0 10px 20px rgba(128, 0, 32, 0.1);
+}
+
+.artistic-title {
+  font-size: 24px;
+  font-weight: 700;
+  margin-bottom: 30px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.artistic-title::after {
+  content: '';
+  height: 2px;
+  width: 60px;
+  background-color: #800020;
+  display: inline-block;
+}
+
+/* Hide scrollbar premium */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+::-webkit-scrollbar-track {
+  background: #F8F9FA;
+}
+::-webkit-scrollbar-thumb {
+  background: #E5E7EB;
+  border-radius: 9999px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: #800020;
+}
+
+/* Hide scrollbar utility for touch scroll elements */
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+.no-scrollbar {
+  -ms-overflow-style: none;  /* IE and Edge */
+  scrollbar-width: none;  /* Firefox */
+}
+
